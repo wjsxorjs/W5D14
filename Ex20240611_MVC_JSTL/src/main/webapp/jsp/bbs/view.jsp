@@ -3,6 +3,8 @@
 <%@page import="mybatis.vo.BbsVO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -59,21 +61,13 @@
 		box-shadow: rgb(204,204,204) 0px 2px 4px 0px;
 	}
 	
-		
 </style>
-<%
-	Object obj = request.getAttribute("bvo");
-	BbsVO bvo = null;
-	if(obj != null){
-		bvo = (BbsVO) obj;
-	} else{
-		response.sendRedirect("Controller");
-	}
-	
-
-%>
 </head>
 <body>
+	<c:set var="bvo" value="${requestScope.bvo }" />
+	<c:if test="${bvo == null }">
+		<c:redirect url="Controller"/>
+	</c:if>
 	<div id="bbs">
 	<form method="post" >
 		<table summary="게시판 글쓰기">
@@ -81,29 +75,28 @@
 			<tbody>
 				<tr>
 					<th>제목:</th>
-					<td><%=bvo.getSubject() %></td>
+					<td>${bvo.subject}</td>
 				</tr>
 
 				<tr>
 					<th>첨부파일:</th>
 					<td>
-					<% 
-					if(bvo.getFile_name() != null){
-					%>
-					<a href="javascript:down('<%=bvo.getFile_name() %>')"> <%=bvo.getOri_name() %> </a>
-					<%} else{ %>
-					 -
-					<%} %>
+					<c:if test="${bvo.file_name != null }">
+						<a href="javascript:down('${bvo.file_name}')"> ${bvo.ori_name} </a>
+					</c:if>
+					<c:if test="${bvo.file_name == null }">
+						-
+					</c:if>
 					</td>
 				</tr>
 				
 				<tr>
 					<th>이름:</th>
-					<td><%=bvo.getWriter() %></td>
+					<td>${bvo.writer}</td>
 				</tr>
 				<tr>
 					<th>내용:</th>
-					<td><%=bvo.getContent() %></td>
+					<td>${bvo.content}</td>
 				</tr>
 				
 				<tr>
@@ -131,18 +124,13 @@
 	
 	댓글들<hr/>
 		<div class="list_bg">
-		<%
-			List<CommentVO> c_list = bvo.getC_list();
-			for(CommentVO cvo: c_list){
-		%>
-			
+			<c:forEach var="cvo" items="${bvo.c_list }">
 				<div class="list_item">
-					이름:<%=cvo.getWriter() %> &nbsp;&nbsp;
-					날짜:<%=cvo.getWrite_date() %><br/>
-					내용:<%=cvo.getContent() %>
+					이름:${cvo.writer } &nbsp;&nbsp;
+					날짜:${cvo.write_date }<br/>
+					내용:${cvo.content }
 				</div>
-			
-		<%} %>
+			</c:forEach>
 		</div>
 	</div>
 	
