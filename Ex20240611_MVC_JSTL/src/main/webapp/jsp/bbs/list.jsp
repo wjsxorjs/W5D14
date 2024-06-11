@@ -3,6 +3,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -123,54 +124,41 @@
 							</c:if>
 						</c:forEach>
 						
-						<c:if test="${pvo.endPage >= pvo.pagePerBlock }">
+						<c:if test="${pvo.endPage >= pvo.totalPage }">
 							<li class="disable">&gt;</li>
 						</c:if>
-						<c:if test="${pvo.endPage < pvo.pagePerBlock }">
+						<c:if test="${pvo.endPage < pvo.totalPage }">
 							<li><a href="Controller?type=list&bname=bbs&cPage=${pvo.startPage+pvo.pagePerBlock}">&gt;</a></li>
 						</c:if>
 						</ol>
               		</td>
 					<td>
 					<input type="button" value="글쓰기"
-	onclick="javascript:location.href='Controller?type=write&bname=bbs&cPage=<%=pvo.getNowPage()%>'"/>
+	onclick="javascript:location.href='Controller?type=write&bname=bbs&cPage=${pvo.nowPage}'"/>
 					</td>
 				</tr>
 			</tfoot>
 			<tbody>
-			<%
-				Object obj = request.getAttribute("bbs");
-				if(obj != null){
-					BbsVO[] b_ar = (BbsVO[]) obj;
-					
-					for(BbsVO bvo: b_ar){
-						%>
-						 <tr>
-						 	<td><%=bvo.getRnum() %></td>
-						 	<td><a href="Controller?type=view&bname=bbs&b_idx=<%=bvo.getB_idx()%>&cPage=<%=pvo.getNowPage()%>">
-						 		<%=bvo.getSubject() %>
-						 		<%
-						 		if(bvo.getC_list().size()>0){
-						 		%>
-						 		(<%=bvo.getC_list().size() %>)
-						 		<%	
-						 		}
-						 		%>
-						 		</a></td>
-						 	<td><%=bvo.getWriter() %></td>
-						 	<td><%=bvo.getWrite_date() %></td>
-						 	<td><%=bvo.getHit() %></td>
-						 </tr>
-						<%
-					} // for문의 끝
-				} else {
-					%>
-					 <tr>
-					 	<td colspan="5">등록된 게시물이 없습니다.</td>
-					 </tr>
-					<%
-				}
-			%>
+			<c:set var="b_ar" value="${requestScope.bbs }"/>
+			<c:forEach var="bvo" items="${b_ar }" varStatus="vs">
+				<tr>
+				 	<td>${pvo.totalRecord - (bvo.rnum-1)}</td>
+				 	<td><a href="Controller?type=view&bname=bbs&b_idx=${bvo.b_idx }&cPage=${pvo.nowPage}">
+				 		${bvo.subject }
+				 		<c:if test="${bvo.c_list.size()>0 }">
+				 		(${bvo.getC_list().size() })
+				 		</c:if>
+				 		</a></td>
+				 	<td>${bvo.getWriter() }</td>
+				 	<td>${bvo.getWrite_date() }</td>
+				 	<td>${bvo.getHit() }</td>
+				 </tr>
+			</c:forEach>
+			<c:if test="${fn:length(b_ar) < 1 }">
+				 <tr>
+				 	<td colspan="5">등록된 게시물이 없습니다.</td>
+				 </tr>
+			</c:if>
 			</tbody>
 		</table>
 	</div>
