@@ -17,12 +17,13 @@
 	<%-- 파라미터 count를 저장하는 JSTL변수 i를 선언하시오. --%>
 	<c:set var="i" value="${param.count }" />
 	<h3>
-		<c:if test="${i >= 50 }">
+		<c:if test="${!i.equals('') and i >= 50 }">
 			50 이상
 		</c:if>
-		<c:if test="${i < 50 }">
+		<c:if test="${!i.equals('') and i < 50 }">
 			50 미만
 		</c:if>
+		
 	</h3>
 </body>
 </html>
